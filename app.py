@@ -48,6 +48,24 @@ def login():
         return render_template('index.html')
 
 
+# Route for Register page
+@app.route('/register', methods=["POST"])
+def register():
+    # Collect info from the form, Check if its in the db/login, otherwise show the home page
+    username = request.form["username"]
+    password = request.form["password"]
+    user = User.query.filter_by(username=username).first()
+    if user:
+        return render_template('index.html', error="Uesr already here!")
+    else:
+        new_user = User(username=username)
+        new_user.set_password(password)
+        db.session.add(new_user)
+        db.session.commit()
+        session['username'] = username
+        return redirect(url_for('dashboard'))
+
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
