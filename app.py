@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.secret_key = "our secret_key"
 
 
-# Configure SQL Alchemy
+# Configure SQL Alchemy then it creates "instance" folder to application directory
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
 app.config["SQLALCHEMY_DATABASE_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
@@ -20,10 +20,10 @@ class User(db.model):
     username = db.column(db.string(25), unique=True, nullabel=False)
     password = db.column(db.string(150), nullabel=False)
 
-    def set_password(self.password):
+    def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
-    def set_password(self.password):
+    def set_password(self, password):
         return check_password_hash(self.password_hash, password)
 
 
