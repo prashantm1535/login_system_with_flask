@@ -14,11 +14,11 @@ db = SQLAlchemy(app)
 
 
 # Database model ~ Single row in our db
-class User(db.model):
+class User(db.Model):
     # Class Variables
-    id = db.column(db.integer, primary_key=True)
-    username = db.column(db.string(25), unique=True, nullabel=False)
-    password = db.column(db.string(150), nullabel=False)
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(25), unique=True, nullable=False)
+    password = db.Column(db.String(150), nullable=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
