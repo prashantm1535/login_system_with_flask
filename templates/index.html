@@ -1,0 +1,23 @@
+{% extends "base.html"%} {% block content %}
+
+<div class="container">
+  <h1>Welcome</h1>
+  <form action="">
+    <input
+      type="text"
+      name="username"
+      placeholder="Username"
+      class="input-field"
+    />
+    <input
+      type="password"
+      name="password"
+      placeholder="Password"
+      class="input-field"
+    />
+    <input type="submit" value="Login" class="btn btn-login" />
+    <input type="button" value="Register" class="btn btn-login" />
+  </form>
+</div>
+
+{% endblock %}
