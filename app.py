@@ -35,6 +35,19 @@ def home():
     return render_template('index.html')
 
 
+# Route for login page
+@app.route('/login', methods=["POST"])
+def login():
+    # Collect info from the form, Check if its in the db/login, otherwise show the home page
+    username = request.form["username"]
+    password = request.form["password"]
+    user = User.query.filter_by(username=username).first()
+    if user and user.check_password(password):
+        session['username'] = username
+    else:
+        return render_template('index.html')
+
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
