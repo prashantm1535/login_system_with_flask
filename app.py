@@ -1,16 +1,31 @@
-from flask import Flask, request, render_template, redirect, url_for, session 
+from flask import Flask, request, render_template, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 
+
 app = Flask(__name__)
 app.secret_key = "our secret_key"
+
 
 # Configure SQL Alchemy
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
 app.config["SQLALCHEMY_DATABASE_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
-# Database model
+
+# Database model ~ Single row in our db
+class User(db.model):
+    # Class Variables
+    id = db.column(db.integer, primary_key=True)
+    username = db.column(db.string(25), unique=True, nullabel=False)
+    password = db.column(db.string(150), nullabel=False)
+
+    def set_password(self.password):
+        self.password_hash = generate_password_hash(password)
+
+    def set_password(self.password):
+        return check_password_hash(self.password_hash, password)
+
 
 # Route for home page
 @app.route("/")
