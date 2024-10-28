@@ -7,9 +7,9 @@ app = Flask(__name__)
 app.secret_key = "our secret_key"
 
 
-# Configure SQL Alchemy then it creates "instance" folder to application directory
+# Configure SQL Alchemy and create an "instance" folder in the application directory
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
-app.config["SQLALCHEMY_DATABASE_MODIFICATIONS"] = False
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 
@@ -18,12 +18,12 @@ class User(db.Model):
     # Class Variables
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(25), unique=True, nullable=False)
-    password = db.Column(db.String(150), nullable=False)
+    password_hash = db.Column(db.String(150), nullable=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
-    def set_password(self, password):
+    def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
 
@@ -38,25 +38,26 @@ def home():
 # Route for login page
 @app.route('/login', methods=["POST"])
 def login():
-    # Collect info from the form, Check if its in the db/login, otherwise show the home page
+    # Collect info from the form, check if it's in the db/login, otherwise show the home page
     username = request.form["username"]
     password = request.form["password"]
     user = User.query.filter_by(username=username).first()
     if user and user.check_password(password):
         session['username'] = username
+        return redirect(url_for('dashboard'))
     else:
-        return render_template('index.html')
+        return render_template('index.html', error="Invalid username or password.")
 
 
 # Route for Register page
 @app.route('/register', methods=["POST"])
 def register():
-    # Collect info from the form, Check if its in the db/login, otherwise show the home page
+    # Collect info from the form, check if user exists, otherwise create new user
     username = request.form["username"]
     password = request.form["password"]
     user = User.query.filter_by(username=username).first()
     if user:
-        return render_template('index.html', error="Uesr already here!")
+        return render_template('index.html', error="User already exists!")
     else:
         new_user = User(username=username)
         new_user.set_password(password)
@@ -64,6 +65,14 @@ def register():
         db.session.commit()
         session['username'] = username
         return redirect(url_for('dashboard'))
+
+
+# Dashboard route
+@app.route('/dashboard')
+def dashboard():
+    if "username" not in session:
+        return redirect(url_for("home"))
+    return render_template("dashboard.html")
 
 
 if __name__ == "__main__":
